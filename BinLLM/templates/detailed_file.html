@@ -1,0 +1,491 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BinLLm_upload_file</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/fileinput.css' %}" rel="stylesheet">
+    <!-- markdown 解析-->
+
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-light sidebar sidebar-light accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'BinLLM:index' %}">
+                <!--logo -->
+                <div class="sidebar-brand-icon rotate-n-0">
+                    <img src="{% static 'img/plan.png' %}" alt="logo" width="40" height="auto">
+                 </div>
+                <!-- 项目名称 -->
+                <div class="sidebar-brand-text mx-4" style="font-size: 25px;">BinLLM</div>
+            </a>
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                <div style="display: flex; justify-content: center;">
+                    自动化二进制代码漏洞检测系统
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- 文件上传 -->
+            <li class="nav-item active">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages_1"
+                    aria-expanded="true" aria-controls="collapsePages_1">
+                    <i class="fas fa-upload"></i>
+                    <span style="font-size: 16px">文件上传</span>
+                </a>
+                <div id="collapsePages_1" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-gray-300 py-2 collapse-inner rounded">
+                        <h6 class="collapse-header" style="color: #484a54">选项</h6>
+                        <a class="collapse-item" href="{% url 'BinLLM:upload_file' %}">单个检测</a>
+                        <a class="collapse-item" href="{% url 'BinLLM:upload_multi_file' %}">批量检测</a>
+                    </div>
+                </div>
+            </li>
+
+{#            <!-- Heading -->#}
+{#            <div class="sidebar-heading">#}
+{#                <span>功能列表</span>#}
+{#            </div>#}
+
+            <!-- 账户管理 -->
+            <!-- 账户管理 -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages_2"
+                    aria-expanded="true" aria-controls="collapsePages_2">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span style="font-size: 16px">账户管理</span>
+                </a>
+                <div id="collapsePages_2" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-gray-400 py-2 collapse-inner rounded">
+                        <h6 class="collapse-header" style="color: #484a54">选项</h6>
+                        <a class="collapse-item" href="{% url 'User:profile' %}">个人信息</a>
+                        <a class="collapse-item" href="{% url 'User:settings' %}">系统设置</a>
+                        <hr>
+                        <a class="collapse-item" href="{% url 'User:login' %}">退出登录</a>
+                    </div>
+                </div>
+            </li>
+
+
+
+            <!-- 日志分析 -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'BinLLM:history' %}">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span style="font-size: 16px">分析日志</span></a>
+            </li>
+
+            <!-- 关于我们 -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'BinLLM:about' %}">
+                    <i class="fas fa-home"></i>
+                    <span style="font-size: 16px">关于我们</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+            <!-- Sidebar Message -->
+            <div class="sidebar-card d-none d-lg-flex">
+                <img class="sidebar-card-illustration mb-2" src="{% static 'img/undraw_rocket.svg' %}" alt="...">
+                <p class="text-center mb-2" style="color: #484a54"><strong>BinLLM</strong> 是一款基于大语言模型的二进制代码漏洞检测系统。由 SJTU 学生团队开发</p>
+                <a class="btn btn-primary btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro" style="font-size: 13px;">了解更多</a>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+               <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - Messages -->
+                        <li class="nav-item no-arrow mx-1">
+                            <a class="nav-link" href="{% url 'HOME:index' %}" id="messagesDropdown" role="button">
+                                <i class="fas fa-home fa-fw"></i>
+                                <!-- 跳转门户页面 -->
+                                <span class="text-gray-600 small" style="padding-left: 5px">返回主页</span>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user.user_name }}</span>
+                                <img class="img-profile rounded-circle"
+                                    src="{% static 'img/undraw_profile.svg' %}">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'User:profile' %}">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    个人信息
+                                </a>
+                                <a class="dropdown-item" href="{% url 'User:settings' %}">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    系统设置
+                                </a>
+                                <div class="dropdown-divider" href="{% url 'User:login' %}"></div>
+                                <a class="dropdown-item" href="{% url 'User:login' %}" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    退出登录
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Content Row -->
+                    <div class="row">
+                        <div class="col-lg-1 mb-4">
+                        </div>
+                        <div class="col-lg-9 mb-4">
+                            <!--标题：分析结果-->
+                            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                                <div>
+                                    <h1 class="h3 mb-0 text-gray-800">
+                                        分析结果:
+                                        {% if match.taint_label %}
+                                            <strong>漏洞存在！</strong>
+                                        {% else %}
+                                            <strong>无漏洞！</strong>
+                                        {% endif %}
+                                    </h1>
+                                    <p class="mb-4" style="margin-top: 12px; margin-bottom: 0px">包含三个步骤：反汇编、函数调用链分析、污点检测。支持 PDF 格式检测结果下载。</p>
+                                </div>
+                                <a ><i class="fas fa-download fa-sm text-white-50"></i></a>
+                                <a href="{% url 'BinLLM:file_download' hash_id=match.hash_value %}" class="btn btn-success btn-icon-split btn-sm">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-download"></i>
+                                    </span>
+                                    <span class="text">下载报告</span>
+                                </a>
+                                <a href="{% url 'BinLLM:file_rehandle' hash_id=match.hash_value %}" class="btn btn-secondary btn-icon-split btn-sm" onclick="return file_rehandle({{ match.file_name }})">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-redo"></i>
+                                    </span>
+                                    <span class="text">重新分析</span>
+                                </a>
+                                <a href="{% url 'BinLLM:file_delete' hash_id=match.hash_value %}" class="btn btn-danger btn-icon-split btn-sm" onclick="return file_delete({{ match.file_name }})">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span class="text">删除记录</span>
+                                </a>
+                            </div>
+                            <!-- 基本信息 -->
+                            <div class="card shadow mb-4">
+                                <!--标题-->
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">基本信息</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+
+                                        <div class="col-sm-3 mb-4">
+                                            <img src="{% static 'img/search-file.gif' %}" style="width: 80%; height: auto;">
+                                        </div>
+                                        <div class="col-sm-2 mb-4" style="line-height: 1; margin-bottom: 0px; font-size: 15px; font-weight: bold">
+                                            <p>名称</p>
+                                            <hr>
+                                            <p>HASH(MD5)</p>
+                                            <hr>
+                                            <p>分析时间</p>
+                                            <hr>
+                                            <p>文件大小</p>
+                                            <hr>
+                                            <p>文件类型</p>
+
+                                        </div>
+                                        <div class="col-sm-6 mb-4" style="line-height: 1; margin-bottom: 0px; font-size: 15px">
+                                            <p>{{ match.file_name }}</p>
+                                            <hr>
+                                            <p>{{ match.hash_value }}</p>
+                                            <hr>
+                                            <p>{{ match.create_time|date:"Y-m-d H:i" }}</p>
+                                            <hr>
+                                            <p>{{ match.filesize }}</p>
+                                            <hr>
+                                            <p>{{ match.filetype }}</p>
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <!--虚线框-->
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+                       <!-- Content Column -->
+                        <div class="col-lg-1 mb-4">
+                        </div>
+
+                        <div class="col-lg-9 mb-4">
+
+                            <div class = "result">
+
+                            </div>
+                            <ul id="myTab" class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a href="#page1" class="nav-link active" data-toggle="tab"><strong>函数调用链</strong></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#page2" class="nav-link" data-toggle="tab"><strong>反汇编代码</strong></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#page3" class="nav-link" data-toggle="tab"><strong>详细信息</strong></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#page4" class="nav-link" data-toggle="tab"><strong>checksec</strong></a>
+                                </li>
+                            </ul>
+
+                            <!-- Approach -->
+                            <div class="card shadow mb-4">
+{#                                <div class="card-header py-3">#}
+{#                                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>#}
+{#                                </div>#}
+                                <div class="card-body">
+
+                                    <div id="myTabContent" class="tab-content">
+                                        <div class="tab-pane fade in active" id="page1">
+                                            {{ match.call_chain }}
+                                        </div>
+                                        <div class="tab-pane fade" id="page2">
+                                            {{ dc_repo|safe }}
+                                        </div>
+                                        <div class="tab-pane fade" id="page3">
+                                            <p>{{ hs|safe }}</p>
+                                        </div>
+                                        <div class="tab-pane fade" id="page4">
+                                            <p>{{ cs|safe }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">分析报告</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ md_repo|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Your Website 2021</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="{% url 'User:login' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('content').innerHTML =
+          marked('# Marked in the browser\n\nRendered by **marked**.');
+    </script>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
+    <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+    <script src="{% static 'js/locales/es.js' %}"></script>
+    <script src="{% static 'js/locales/fr.js' %}"></script>
+    <script src="{% static 'js/fileinput.js' %}"></script>
+
+    <script src="{% static 'js/plugins/buffer.min.js' %}"></script>
+    <script src="{% static 'js/plugins/filetype.min.js' %}"></script>
+    <script src="{% static 'js/plugins/piexif.js' %}"></script>
+    <script src="{% static 'js/plugins/sortable.js' %}"></script>
+
+    <!-- markdown 解析-->
+    <script src="https://cdn.bootcdn.net/ajax/libs/marked/2.0.3/marked.js"></script>
+
+    <meta name="csrf-token" content="{% csrf_token %}">
+
+</body>
+<script>
+	$(function () {
+		$('#myTab li:eq(1) a').tab('show');
+	});
+</script>
+
+<script>
+
+    $("#file-binary")
+        .fileinput({
+        language: "zh", //设置语言
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        dropZoneTitle: "可以将文件拖放到这里",
+        theme: "fa",      // 主题设置
+        initialPreviewAsData: true,
+        showUploadedThumbs: true,
+        uploadUrl: "process_file",
+        dropZoneEnabled: true,          // 点击预览区域进行文件上传操作
+        showClose: false,
+        showPreview: true,
+        showAjaxErrorDetails: false,
+        layoutTemplates :{
+            {#actionDelete:'', //去除上传预览的缩略图中的删除图标#}
+            actionUpload:'',//去除上传预览缩略图中的上传图片；
+            actionZoom:''   //去除上传预览缩略图中的查看详情预览的缩略图标。
+        },
+        fileActionSettings :{
+            removeIcon: 'X'
+        },
+        {#previewClass:"uploadPreview"#}
+        }).on("fileuploaded", function(event, data) { //异步上传成功后回调
+            console.log(data);		//data为返回的数据
+    });
+</script>
+{% if messages %}
+<script>
+    {% for msg in messages %}
+        alert('{{ msg.message }}');
+    {% endfor %}
+</script>
+{% endif %}
+<script type = "text/javascript" >
+
+    function file_delete(name) {
+        var msg = `确定要删除文件 ${name} 吗？\n\n删除后将不可恢复，请谨慎选择！`;
+        if (confirm(msg)==true){
+            {#alert('您选择了 `确认`');#}
+            return true;
+        }else{
+            {#alert('您选择了 `取消`');#}
+            {#event.preventDefault(); // 阻止默认行为#}
+            return false;
+        }
+    }
+
+    function file_rehandle(name) {
+        var msg = `确定要重新分析文件 ${name} 吗？\n\n重新分析后，原有记录将没有备份，请谨慎选择！`;
+        if (confirm(msg)==true){
+            {#alert('您选择了 `确认`');#}
+            return true;
+        }else{
+            {#alert('您选择了 `取消`');#}
+            return false;
+        }
+    }
+
+</script>
+</html>
