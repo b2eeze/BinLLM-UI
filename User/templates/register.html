@@ -129,9 +129,16 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
-
+{% if messages %}
+<script>
+    {% for msg in messages %}
+        alert('{{ msg.message }}');
+    {% endfor %}
+</script>
+{% endif %}
 
 
 </body>
+
 
 </html>

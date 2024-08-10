@@ -29,7 +29,7 @@ def index(request):
 
 
 def about(request):
-    messages.success(request, '操作成功！')
+
     return render(request, "index.html")
 
 

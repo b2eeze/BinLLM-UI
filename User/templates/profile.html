@@ -222,26 +222,58 @@
                                                 {% csrf_token %}
                                                 <div class="form-group row">
                                                     <div class="col-sm-6 mb-3 mb-sm-0">
-                                                        <input type="email" class="form-control form-control-user" name="email"
-                                                        id="InputEmail" aria-describedby="emailHelp"
-                                                        placeholder="邮箱：{{ user.user_email }}">
+                                                        <div class="row">
+                                                            <p style="padding-top: 10px; padding-right: 38px">邮箱</p>
+                                                            <input type="email" class="form-control form-control-user" name="email"
+                                                            id="InputEmail" aria-describedby="emailHelp" style="width: 200px"
+                                                            placeholder="{{ user.user_email }}">
+                                                        </div>
+
                                                     </div>
                                                     <div class="col-sm-6">
-                                                        <input type="text" class="form-control form-control-user"
-                                                        id="InputText"  name="user_name"
-                                                        placeholder="用户名：{{ user.user_name }}">
+                                                        <div class="row">
+                                                            <p style="padding-top: 10px; padding-right: 20px">用户名</p>
+                                                            <input type="text" class="form-control form-control-user"
+                                                            id="InputText"  name="user_name" style="width: 200px"
+                                                            placeholder="{{ user.user_name }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                                        <div class="row">
+                                                            <p style="padding-top: 10px; padding-right: 10px">旧的密码</p>
+                                                            <input type="password" class="form-control form-control-user" name="old_password"
+                                                            id="InputPassword" placeholder="" style="width: 200px">
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="row">
+                                                            <p style="padding-top: 10px; padding-right: 10px">新的密码</p>
+                                                            <input type="password" class="form-control form-control-user" name="new_password"
+                                                                id="RepeatPassword" placeholder=""  style="width: 200px">
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <input type="text" class="form-control form-control-user"
-                                                        id="ID"  name="user_id"
-                                                        placeholder="用户 ID：{{ user.user_id }}">
+                                                    <div class="row">
+                                                        <p style="padding-top: 10px; padding-right: 10px">用户 ID</p>
+                                                        <input type="text" class="form-control form-control-user"
+                                                            id="ID"  name="user_id" disabled="disabled"
+                                                            placeholder="{{ user.user_id }}"  style="width: 500px">
+                                                    </div>
                                                 </div>
+
                                                 <div class="form-group">
+                                                    <div class="row">
+                                                        <p style="padding-top: 10px; padding-right: 10px">个人简介</p>
+                                                    </div>
                                                     <input type="text" class="form-control form-control-user"
                                                         id="BIO"  name="bio"
-                                                        placeholder="个人简介：{{ user.bio }}" style="height: 100px">
+                                                        placeholder="{{ user.bio }}" style="height: 100px; width: 570px" >
+
                                                 </div>
                                                 <button class="btn btn-info btn-user btn-block" type="submit">
                                                     保存更改
@@ -249,6 +281,7 @@
                                             </form>
 
                                         </div>
+                                    </div>
                                 </div>
                                 <!--虚线框-->
                             </div>
@@ -333,4 +366,11 @@
 		$('#myTab li:eq(1) a').tab('show');
 	});
 </script>
+{% if messages %}
+<script>
+    {% for msg in messages %}
+        alert('{{ msg.message }}');
+    {% endfor %}
+</script>
+{% endif %}
 </html>
