@@ -215,13 +215,13 @@
                                     </span>
                                     <span class="text">下载报告</span>
                                 </a>
-                                <a href="{% url 'BinLLM:file_rehandle' hash_id=match.hash_value %}" class="btn btn-secondary btn-icon-split btn-sm" onclick="return file_rehandle({{ match.file_name }})">
+                                <a href="{% url 'BinLLM:file_rehandle' hash_id=match.hash_value %}" class="btn btn-secondary btn-icon-split btn-sm" onclick="return file_rehandle()">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-redo"></i>
                                     </span>
                                     <span class="text">重新分析</span>
                                 </a>
-                                <a href="{% url 'BinLLM:file_delete' hash_id=match.hash_value %}" class="btn btn-danger btn-icon-split btn-sm" onclick="return file_delete({{ match.file_name }})">
+                                <a href="{% url 'BinLLM:file_delete' hash_id=match.hash_value %}" class="btn btn-danger btn-icon-split btn-sm" onclick="return file_delete()">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-trash"></i>
                                     </span>
@@ -424,9 +424,31 @@
 		$('#myTab li:eq(1) a').tab('show');
 	});
 </script>
-
 <script>
+    function file_delete() {
+        var msg = "确定要删除文件吗？\n\n删除后将不可恢复，请谨慎选择！";
+        if (confirm(msg)==true){
+            {#alert('您选择了 `确认`');#}
+            return true;
+        }else{
+            {#alert('您选择了 `取消`');#}
+            event.preventDefault(); // 阻止默认行为
+            return false;
+        }
+    }
 
+    function file_rehandle() {
+        var msg = "确定要重新分析文件吗？\n\n重新分析后，原有记录将没有备份，请谨慎选择！";
+        if (confirm(msg)==true){
+            {#alert('您选择了 `确认`');#}
+            return true;
+        }else{
+            {#alert('您选择了 `取消`');#}
+            return false;
+        }
+    }
+</script>
+<script>
     $("#file-binary")
         .fileinput({
         language: "zh", //设置语言
@@ -462,30 +484,4 @@
     {% endfor %}
 </script>
 {% endif %}
-<script type = "text/javascript" >
-
-    function file_delete(name) {
-        var msg = `确定要删除文件 ${name} 吗？\n\n删除后将不可恢复，请谨慎选择！`;
-        if (confirm(msg)==true){
-            {#alert('您选择了 `确认`');#}
-            return true;
-        }else{
-            {#alert('您选择了 `取消`');#}
-            {#event.preventDefault(); // 阻止默认行为#}
-            return false;
-        }
-    }
-
-    function file_rehandle(name) {
-        var msg = `确定要重新分析文件 ${name} 吗？\n\n重新分析后，原有记录将没有备份，请谨慎选择！`;
-        if (confirm(msg)==true){
-            {#alert('您选择了 `确认`');#}
-            return true;
-        }else{
-            {#alert('您选择了 `取消`');#}
-            return false;
-        }
-    }
-
-</script>
 </html>

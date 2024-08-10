@@ -24,26 +24,21 @@ url = "https://widely-fitting-lacewing.ngrok-free.app/upload"
 
 
 def index(request):
-
     return render(request, "index.html")
 
 
 def about(request):
-
     return render(request, "index.html")
 
 
 def upload_file(request):
     user = request.user
-    # print(user.is_anonymous)
-    print(user.is_authenticated)
     if not user.is_authenticated:
         return redirect("User:login")
     return render(request, "upload_file.html")
 
 def upload_multi_file(request):
     user = request.user
-
     if not user.is_authenticated:
         return redirect("User:login")
 
@@ -55,7 +50,7 @@ def upload_multi_file(request):
 def process_file(request):
     user = request.user
     if not user.is_authenticated:
-        redirect("User:login")
+        return redirect("User:login")
     if request.method == "POST":
         file = request.FILES.getlist('file_data')[0]
 
@@ -183,7 +178,7 @@ def process_file(request):
 def process_multi_file(request):
     user = request.user
     if not user.is_authenticated:
-        redirect("User:login")
+        return redirect("User:login")
 
     # 来自前端 js 的文件
     if request.method == "POST":
@@ -375,8 +370,12 @@ def history(request):
 
 
 def detailed_file(request, hash_id):
-    print("hash id", hash_id)
-    print(type(request))
+    user = request.user
+    if not user.is_authenticated:
+        messages.error(request, '请先登录！')
+        return redirect("User:login")
+    # print("hash id", hash_id)
+    # print(type(request))
     match = Firmwares.objects.filter(hash_value=hash_id)[0]
 
     md = open(match.md_path, 'r', encoding='utf-8').read()
@@ -410,15 +409,22 @@ def detailed_file(request, hash_id):
 
 
 def file_delete(request, hash_id):
-    print("hash id", hash_id)
-    print(type(request))
-
+    user = request.user
+    if not user.is_authenticated:
+        messages.error(request, '请先登录！')
+        return redirect("User:login")
+    # print("hash id", hash_id)
+    # print(type(request))
     Firmwares.objects.filter(hash_value=hash_id).delete()
 
     return redirect("BinLLM:history")
 
 
 def file_download(request, hash_id):
+    user = request.user
+    if not user.is_authenticated:
+        messages.error(request, '请先登录！')
+        return redirect("User:login")
     file_obj = Firmwares.objects.get(hash_value=hash_id)
     repo_file_path = file_obj.md_path
     repo_file_name = file_obj.file_name
@@ -432,6 +438,10 @@ def file_download(request, hash_id):
 
 
 def file_rehandle(request, hash_id):
+    user = request.user
+    if not user.is_authenticated:
+        messages.error(request, '请先登录！')
+        return redirect("User:login")
     user = request.user
     if request.method == "POST":
         file_obj = Firmwares.objects.get(hash_value=hash_id)

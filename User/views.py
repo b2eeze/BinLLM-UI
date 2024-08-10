@@ -43,9 +43,14 @@ def user_login(request):
         print("收到 POST")
         user_email = request.POST.get('email')
         user_password = request.POST.get('password')
+        if user_email is "":
+            messages.info(request, "邮箱不可为空！")
+            return redirect('User:login')
+        if user_password is "":
+            messages.info(request, "密码不可为空！")
+            return redirect('User:login')
         user_db = authenticate(request, user_email=user_email, user_password=user_password)
-        print(user_db)
-        print(user_db.user_password)
+
         if user_db is not None:
             user_db.is_authenticated = True
             user_db.save()
@@ -55,7 +60,7 @@ def user_login(request):
             return redirect('User:profile')  # 重定向到登录后的页面
         else:
             print("not found user!")
-            messages.error(request, '用户不存在！')
+            messages.info(request, '邮箱或密码错误！')
             return redirect('User:login')
 
     elif request.method == 'GET':
@@ -118,6 +123,9 @@ def user_register(request):
 
 def profile(request):
     user = request.user
+    if not user.is_authenticated:
+        messages.error(request, '请先登录！')
+        return redirect("User:login")
     if request.method == 'POST':
         print(request.POST)
         user_name = request.POST.get('user_name')
@@ -161,6 +169,9 @@ def profile(request):
 
 def settings(request):
     user = request.user
+    if not user.is_authenticated:
+        messages.error(request, '请先登录！')
+        return redirect("User:login")
     if request.method == 'POST':
         llm_category = request.POST.get('llm')
         api_key = request.POST.get('api')
