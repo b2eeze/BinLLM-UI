@@ -61,10 +61,15 @@ class Firmwares(models.Model):
         file_path = f"uploads_dataset/{self.file_name}"
         with open(file_path, 'rb') as file:
             md5_hasher.update(file.read())
+            file.seek(0)
             sha1_hasher.update(file.read())
+            file.seek(0)
             sha256_hasher.update(file.read())
+            file.seek(0)
             sha512_hasher.update(file.read())
+            file.seek(0)
             crc32_value = zlib.crc32(file.read(), crc32_value)
+            file.seek(0)
 
         # 获取哈希值和 CRC32 值
         md5_hash = md5_hasher.hexdigest()

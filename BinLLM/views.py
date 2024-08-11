@@ -65,6 +65,7 @@ def process_file(request):
             existing_file_path = os.path.join('uploads_dataset', existing_file)
             with default_storage.open(existing_file_path, 'rb') as f:
                 existing_file_hash = hashlib.md5(f.read()).hexdigest()
+                f.seek(0)
                 if file_hash == existing_file_hash:
                     file_url = existing_file_path
                     file_exists = True
@@ -73,6 +74,7 @@ def process_file(request):
             print("save new")
             # 将文件保存到本地文件夹
             path = default_storage.save(f'uploads_dataset/{file.name}', ContentFile(file.read()))
+            file.seek(0)
             file_url = default_storage.url(path)
 
         if not Firmwares.objects.filter(hash_value=file_hash).exists():
@@ -84,7 +86,7 @@ def process_file(request):
             # markdown 文件
             md_con = json_data['markdown']
             flag_line = md_con.splitlines()[-1]
-            pattern = r"存在CWE-\d+漏洞"
+            pattern = r"存在CWE-.*漏洞"
             if re.search(pattern, flag_line):
                 tl = 1
             else:
@@ -109,8 +111,8 @@ def process_file(request):
             rf = json_data["refined_func"]
 
             decompile_code = ""
-            decompile_code += "#### extract_func\n\n" + "```c\n" + ef + "\n" + "```\n\n"
-            decompile_code += "#### refined_func\n\n" + "```c\n" + rf + "\n" + "```\n\n"
+            # decompile_code += "#### extract_func\n\n" + "```c\n" + ef + "\n" + "```\n\n"
+            decompile_code += "```c\n" + rf + "\n" + "```\n\n"
             with open(f'uploads_dataset/decompile/{file.name}.md', 'w', encoding='utf-8') as f:
                 f.write(decompile_code)
 
@@ -124,32 +126,21 @@ def process_file(request):
             clean_values = [ansi_escape.sub('', value) for value in values]
             clean_values = list(filter(None, clean_values))
 
+            # print("==============================")
+            # print("checksec")
             # print(headers)
             # print(clean_values)
-
-            # # 构建 Markdown 列表
-            # markdown_list = []
-            # for header, value in zip(headers, clean_values):
-            #     markdown_list.append(f"- **{header}:** {value}")
-            #
-            # # 将列表拼接为一个字符串，并打印输出
-            # markdown_output = '\n'.join(markdown_list)
-            # print("checksec.....")
-            # print(stdout)
-            # print(markdown_output)
-
-            table_header = "| property | value |\n"
-            table_header += "|----------|----------|\n"
 
             # 创建表格内容
             table_rows = []
             for header, value in zip(headers, clean_values):
                 table_rows.append(f"| **{header}** | {value} |")
-
+            table_header = "| property | value |\n"
+            table_header += "|----------|----------|\n"
             # 组合表头和表格内容
             markdown_table = table_header + "\n".join(table_rows)
 
-            print(markdown_table)
+            # print(markdown_table)
 
             # 保存新的数据到数据库
             firmware = Firmwares(
@@ -214,6 +205,7 @@ def process_multi_file(request):
                 existing_file_path = os.path.join('uploads_dataset', existing_file)
                 with default_storage.open(existing_file_path, 'rb') as f:
                     existing_file_hash = hashlib.md5(f.read()).hexdigest()
+                    f.seek(0)
                     # 存在
                     if file_hash == existing_file_hash:
                         file_url = existing_file_path
@@ -224,6 +216,7 @@ def process_multi_file(request):
                 print("save new")
                 # 将文件保存到本地文件夹
                 path = default_storage.save(f'uploads_dataset/{file.name}', ContentFile(file.read()))
+                file.seek(0)
                 file_url = default_storage.url(path)
             # 检查结束
 
@@ -237,7 +230,7 @@ def process_multi_file(request):
                 # markdown 文件
                 md_con = json_data['markdown']
                 flag_line = md_con.splitlines()[-1]
-                pattern = r"存在CWE-\d+漏洞"
+                pattern = r"存在CWE-.*漏洞"
                 if re.search(pattern, flag_line):
                     tl = 1
                 else:
@@ -262,8 +255,8 @@ def process_multi_file(request):
                 rf = json_data["refined_func"]
 
                 decompile_code = ""
-                decompile_code += "#### extract_func\n\n" + "```c\n" + ef + "\n" + "```\n\n"
-                decompile_code += "#### refined_func\n\n" + "```c\n" + rf + "\n" + "```\n\n"
+                # decompile_code += "#### extract_func\n\n" + "```c\n" + ef + "\n" + "```\n\n"
+                decompile_code += "```c\n" + rf + "\n" + "```\n\n"
                 with open(f'uploads_dataset/decompile/{file.name}.md', 'w', encoding='utf-8') as f:
                     f.write(decompile_code)
 
@@ -289,14 +282,13 @@ def process_multi_file(request):
                 # markdown_output = '\n'.join(markdown_list)
                 # print(markdown_output)
 
-                table_header = "| property | value |\n"
-                table_header += "|----------|----------|\n"
 
                 # 创建表格内容
                 table_rows = []
                 for header, value in zip(headers, clean_values):
                     table_rows.append(f"| **{header}** | {value} |")
-
+                table_header = "| property | value |\n"
+                table_header += "|----------|----------|\n"
                 # 组合表头和表格内容
                 markdown_table = table_header + "\n".join(table_rows)
 
@@ -346,7 +338,7 @@ def history(request):
             data_taint += 1
         else:
             data_clean += 1
-    data = [data_clean, data_taint]
+    data = [data_taint, data_clean]
     chart_data = {"labels": labels, "data": data}
 
     today = datetime.now()
@@ -378,9 +370,13 @@ def detailed_file(request, hash_id):
     # print(type(request))
     match = Firmwares.objects.filter(hash_value=hash_id)[0]
 
-    md = open(match.md_path, 'r', encoding='utf-8').read()
+    with open(match.md_path, 'r', encoding='utf-8') as file:
+        md = file.read()
+        file.seek(0)
     js = json.load(open(match.json_path, 'r', encoding='utf-8'))
-    dc = open(match.dc_path, 'r', encoding='utf-8').read()
+    with open(match.dc_path, 'r', encoding='utf-8') as file:
+        dc = file.read()
+        file.seek(0)
     # 从数据库中读取
     md_repo = markdown.markdown(md, extensions=[
                  'markdown.extensions.extra',
@@ -443,49 +439,49 @@ def file_rehandle(request, hash_id):
         messages.error(request, '请先登录！')
         return redirect("User:login")
     user = request.user
-    if request.method == "POST":
-        file_obj = Firmwares.objects.get(hash_value=hash_id)
-        file_path = os.path.join('uploads_dataset', file_obj.file_name)
-        with default_storage.open(file_path, 'rb') as file:
-            # 上传文件到远程服务器处理，利用 requests 库实现
-            files = {'file': file}
-            response = requests.post(url, files=files)
-            json_data = response.json()
+    # if request.method == "POST":
+    #     pass
+    file_obj = Firmwares.objects.get(hash_value=hash_id)
+    file_path = os.path.join('uploads_dataset', file_obj.file_name)
+    with default_storage.open(file_path, 'rb') as file:
+        # 上传文件到远程服务器处理，利用 requests 库实现
+        files = {'file': file}
+        response = requests.post(url, files=files)
+        json_data = response.json()
 
-            # markdown 文件
-            md_con = json_data['markdown']
-            flag_line = md_con.splitlines()[-1]
-            pattern = r"存在CWE-\d+漏洞"
-            if re.search(pattern, flag_line):
-                tl = 1
-            else:
-                tl = 0
-            with open(f'uploads_dataset/markdown/{file.name}.md', 'w', encoding='utf-8') as f:
-                f.write(md_con)
+        # markdown 文件
+        md_con = json_data['markdown']
+        flag_line = md_con.splitlines()[-1]
+        pattern = r"存在CWE-\d+漏洞"
+        if re.search(pattern, flag_line):
+            tl = 1
+        else:
+            tl = 0
+        with open(f'uploads_dataset/markdown/{file_obj.file_name}.md', 'w', encoding='utf-8') as f:
+            f.write(md_con)
 
-            # 反汇编 json 文件
-            dc_con = json_data['decompile']
-            if "{" not in dc_con:
-                dc_json = "{ }"
-            else:
-                dc_json = json.loads(dc_con)
+        # 反汇编 json 文件
+        dc_con = json_data['decompile']
+        if "{" not in dc_con:
+            dc_json = "{ }"
+        else:
+            dc_json = json.loads(dc_con)
 
-            with open(f'uploads_dataset/json/{file.name}.json', 'w', encoding='utf-8') as f:
-                f.write(dc_json)
+        with open(f'uploads_dataset/json/{file_obj.file_name}.json', 'w', encoding='utf-8') as f:
+            f.write(dc_json)
 
-            # 函数调用链
-            cc = json_data["call_chain"]
-            # 反汇编代码
-            ef = json_data["extract_func"]
-            rf = json_data["refined_func"]
+        # 函数调用链
+        cc = json_data["call_chain"]
+        # 反汇编代码
+        ef = json_data["extract_func"]
+        rf = json_data["refined_func"]
 
-            decompile_code = ""
-            decompile_code += "#### extract_func\n\n" + "```c\n" + ef + "\n" + "```\n\n"
-            decompile_code += "#### refined_func\n\n" + "```c\n" + rf + "\n" + "```\n\n"
-            with open(f'uploads_dataset/decompile/{file.name}.md', 'w', encoding='utf-8') as f:
-                f.write(decompile_code)
-            file_obj.taint_label=tl
-            file_obj.save()
+        decompile_code = ""
+        decompile_code += "```c\n" + rf + "\n" + "```\n\n"
+        with open(f'uploads_dataset/decompile/{file_obj.file_name}.md', 'w', encoding='utf-8') as f:
+            f.write(decompile_code)
+        file_obj.taint_label=tl
+        file_obj.save()
 
 
     return redirect("BinLLM:detailed_file", hash_id)
