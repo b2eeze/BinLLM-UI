@@ -1,14 +1,13 @@
 ```c
-void
-FUN_00100a80(void)
+int FUN_00100afa()
 {
-    char c;
-    char c2;
+    srand(time(NULL));
 
-    c = ' ';
-    __isoc99_fscanf(stdin, "%c", &c);
-    c2 = c + 1;
-    FUN_00100c7a(c2);
+    FUN_00100b43("Calling bad()...");
+    FUN_00100a80();
+    FUN_00100b43("Finished bad()");
+
+    return 0;
 }
 ```
 
